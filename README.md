@@ -1,73 +1,110 @@
-# React + TypeScript + Vite
+## Fundación Futuro Verde – Plataforma de Donaciones
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para una fundación ambiental que permite presentar la misión, proyectos de conservación y recibir donaciones en línea a través de una pasarela de pagos externa.
 
-Currently, two official plugins are available:
+### Características principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Home principal** con hero, imagen destacada, misión y visión con pestañas.
+- **Página de proyectos** con tarjetas e imágenes para:
+  - Reforestación y recuperación de bosques nativos.
+  - Educación ambiental para comunidades y escuelas.
+  - Protección hídrica y conservación de ecosistemas acuáticos.
+  - Programas sociales rurales y desarrollo sostenible.
+- **Flujo de donación**:
+  - Formulario con identificación, nombre completo, email, monto en USD y mensaje.
+  - Creación de la donación en el backend.
+  - Redirección automática a la pasarela de pagos (Stripe) usando la `paymentUrl` devuelta por la API.
+- **Formulario de contacto** para captar personas interesadas en colaborar con la fundación.
+- Diseño responsive, orientado a contenido institucional.
 
-## React Compiler
+### Stack tecnológico
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **Frontend**: React + TypeScript.
+- **Bundler / Dev Server**: Vite.
+- **Estilos**: CSS modular y variables globales (design tokens).
+- **Router**: `react-router-dom`.
 
-## Expanding the ESLint configuration
+### Estructura de carpetas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `src/`
+  - `api/`: cliente HTTP y servicios (`donations`, `contacts`).
+  - `components/`: componentes reutilizables (`Layout`, `Header`, `Footer`, `DonateButton`, `DonationForm`, `ContactForm`, `Modal`).
+  - `pages/`: páginas principales (`Home`, `Proyectos`, `Donaciones`, `Contacto`).
+  - `styles/`: estilos globales y variables (`global.css`, `variables.css`).
+  - `types/`: definiciones de tipos compartidos (`DonationPayload`, `ContactPayload`, respuesta de donaciones).
+  - `lib/`: utilidades de validación de formularios.
+- `public/`
+  - `proyectos/`: imágenes utilizadas en el hero y en las tarjetas de proyectos.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Configuración de entorno
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+La comunicación con el backend se realiza mediante variables de entorno de Vite (prefijo `VITE_`).
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Variables esperadas:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- `VITE_API_URL` (obligatoria): URL base de la API.
+  - Ejemplo para el backend de pruebas:
+    ```env
+    VITE_API_URL=https://donations-test.onrender.com/api
+    ```
+- `VITE_CONTACTS_PATH` (opcional): ruta para el endpoint de contactos.  
+  Por defecto el frontend usa `/contacts`. Solo es necesario definirla si el backend expone otra ruta.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Archivos:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `.env`: contiene los valores reales para cada entorno (no se versiona).
+- `.env.example`: plantilla de ejemplo con claves necesarias, incluida en el repositorio.
+
+### Scripts disponibles
+
+En el directorio del proyecto:
+
+- `npm run dev`  
+  Inicia el servidor de desarrollo de Vite.
+
+- `npm run build`  
+  Genera el build de producción en la carpeta `dist/`.
+
+- `npm run preview`  
+  Sirve el build de producción localmente.
+
+- `npm run lint`  
+  Ejecuta el linter sobre el código fuente.
+
+### Flujo de donación
+
+1. El usuario abre el modal de donación desde cualquiera de los botones “Donar”.
+2. Completa el formulario con:
+   - `identification`
+   - `fullName`
+   - `email`
+   - `amount` (USD)
+   - `message`
+3. El frontend envía un `POST` a:
+   - `POST {VITE_API_URL}/donations/create`
+4. El backend responde con:
+   - Objeto `donation`.
+   - Campo `paymentUrl` con la URL de la pasarela de pagos.
+5. El frontend redirige automáticamente a `paymentUrl` para completar el pago.
+
+### Flujo de contacto
+
+1. El usuario accede a la página **Contacto**.
+2. Completa nombre, email, teléfono (opcional) y mensaje.
+3. El frontend envía un `POST` a:
+   - `POST {VITE_API_URL}{VITE_CONTACTS_PATH || '/contacts'}`.
+4. Si la operación es correcta, se limpia el formulario y se muestra un mensaje de confirmación.
+
+### Despliegue en Vercel
+
+1. Subir el repositorio a GitHub.
+2. En Vercel, crear un **New Project** importando el repositorio.
+3. Configurar:
+   - Framework: **Vite**.
+   - Build Command: `npm run build`.
+   - Output Directory: `dist`.
+4. Definir variables de entorno en Vercel:
+   - `VITE_API_URL=https://donations-test.onrender.com/api`
+   - Opcional: `VITE_CONTACTS_PATH=/contacts`.
+5. Ejecutar el primer deploy.
+

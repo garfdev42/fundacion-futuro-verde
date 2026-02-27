@@ -47,10 +47,10 @@ export function DonationForm({ onSuccess, onError }: DonationFormProps) {
       const response = await createDonation(payload);
       setPayload(initial);
       if (response.data?.paymentUrl) {
-        window.location.href = response.data.paymentUrl;
-        return;
+        window.open(response.data.paymentUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        onSuccess(payload.amount, payload.currency);
       }
-      onSuccess(payload.amount, payload.currency);
     } catch (err) {
       onError(err instanceof Error ? err.message : 'Error al enviar la donación');
     } finally {
