@@ -1,0 +1,37 @@
+.hero {
+  padding: 2.5rem 0;
+  background: var(--color-bg-alt);
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+.section {
+  padding: 2rem 0 3rem;
+}
+
+.success {
+  padding: 2rem;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-lg);
+  color: var(--color-primary-dark);
+  font-weight: 500;
+}
+
+.errorBox {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  color: var(--color-error);
+  border-radius: var(--radius);
+}
